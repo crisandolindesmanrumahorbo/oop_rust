@@ -1,8 +1,6 @@
 pub trait IInstallemnt {
     fn monlty_installment(&self) -> Vec<String> {
-        let mut installments: Vec<String> = Vec::with_capacity(0);
-        installments.push(String::from("read more"));
-        installments
+        vec![String::from("read more")]
     }
 }
 
@@ -37,12 +35,7 @@ fn sanititize_down_payment(
     is_new: bool,
     price: u32,
 ) -> Result<u32, &'static str> {
-    let multiplier;
-    if is_new {
-        multiplier = 25. / 100.;
-    } else {
-        multiplier = 35. / 100.;
-    }
+    let multiplier = if is_new { 25. / 100. } else { 35. / 100. };
     let min_dp = price as f32 * multiplier;
     if min_dp > down_payment as f32 {
         return Err("Minimum Down Payment");
@@ -51,7 +44,7 @@ fn sanititize_down_payment(
 }
 
 fn sanitize_tenor(tenor: u16) -> Result<u16, &'static str> {
-    if tenor > 6 || tenor < 1 {
+    if !(1..=6).contains(&tenor) {
         return Err("Tenor Range");
     }
     Ok(tenor)

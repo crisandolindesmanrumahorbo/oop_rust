@@ -1,3 +1,6 @@
+use std::io::{Read, Write};
+use std::net::{TcpListener, TcpStream};
+
 use oop::summary::{Summary, notify3};
 use oop::{installment::CarInstallment, summary::NewsArticle};
 
@@ -29,4 +32,29 @@ fn main() {
 
     println!("New article available! {}", article.summarize());
     notify3(&article);
+
+    let listener = TcpListener::bind("127.0.0.1:8080").expect("failed to bind");
+
+    loop {
+        let (stream, _) = listener.accept().unwrap();
+        std::thread::spawn(move || handle_client(stream));
+    }
+}
+
+fn handle_client(mut stream: TcpStream) {
+    let mut buffer = [0; 1024];
+    match stream.read(&mut buffer) {
+        Ok(size) => {
+            let request = String::from_utf8_lossy(&buffer[..size]);
+            let _string = String::from("ss");
+            println!("{}", request);
+            stream
+                .write_all(
+                    "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\nhello world!"
+                        .as_bytes(),
+                )
+                .unwrap();
+        }
+        Err(_) => todo!(),
+    };
 }
